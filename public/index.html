@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripción Torneo de Ajedrez</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>U20 Pan American Chess Championship 2025</h1>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" name="first_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Apellido:</label>
+                <input type="text" name="last_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>FIDE ID:</label>
+                <input type="text" name="fide_id" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha de nacimiento:</label>
+                <input type="date" name="birthdate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select name="category" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option value="U7">U7</option>
+                    <option value="U9">U9</option>
+                    <option value="U11">U11</option>
+                    <option value="U13">U13</option>
+                    <option value="U15">U15</option>
+                    <option value="U17">U17</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de participante:</label>
+                <select name="participant_type" required>
+                    <option value="">Seleccione...</option>
+                    <option value="official">Oficial</option>
+                    <option value="unofficial">No Oficial</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Federación:</label>
+                <input type="text" name="federation" required>
+            </div>
+
+            <div class="form-group">
+                <label>Comprobante de pago (PDF/Imagen):</label>
+                <input type="file" name="payment_proof" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <button type="submit">Enviar inscripción</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/registrations', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                if (response.ok) {
+                    window.location.href = '/confirmation.html';
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error}`);
+                }
+            } catch (error) {
+                alert('Error en la conexión');
+            }
+        });
+    </script>
+</body>
+</html>

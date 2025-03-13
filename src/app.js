@@ -1,0 +1,19 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const registrationRoutes = require('./routes/registrationRoutes');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
+
+// API Routes
+app.use('/api', upload.single('payment_proof'), registrationRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
