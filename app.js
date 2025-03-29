@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const registrationRoutes = require('./routes/registrationRoutes');
+const registrationRoutes = require('./src/routes/registrationRoutes');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 
