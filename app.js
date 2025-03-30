@@ -10,6 +10,11 @@ app.use(cors());
 app.use(express.json());
 //app.use(express.static('public'));
 
+//hello world
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 // API Routes
 app.use('/api', upload.single('payment_proof'), registrationRoutes);
 
