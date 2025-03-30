@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 // API Routes
 app.use('/api', upload.single('payment_proof'), registrationRoutes);
