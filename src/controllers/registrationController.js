@@ -11,7 +11,10 @@ const createRegistration = async (req, res) => {
     category,
     participant_type,
     federation,
-    email
+    email,
+    hotel,
+    document_number,
+    comments
   } = req.body;
 
   try {
@@ -32,7 +35,7 @@ const createRegistration = async (req, res) => {
 
     // Insertar en PostgreSQL
     const result = await pool.query(
-      'INSERT INTO registrations (first_name, last_name, fide_id, birthdate, category, participant_type, federation, payment_proof, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      'INSERT INTO registrations (first_name, last_name, fide_id, birthdate, category, participant_type, federation, payment_proof, email, hotel, document_number, comments) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
       [
         first_name,
         last_name,
@@ -42,7 +45,10 @@ const createRegistration = async (req, res) => {
         participant_type,
         federation,
         urlData.publicUrl,
-        email
+        email,
+        hotel,
+        document_number,
+        comments
       ]
     );
 
