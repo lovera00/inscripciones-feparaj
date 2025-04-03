@@ -16,7 +16,10 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
-app.use('/api', upload.single('payment_proof'), registrationRoutes);
+app.use('/api', upload.fields([
+  { name: 'payment_proof', maxCount: 1 },
+  { name: 'federation_approval', maxCount: 1 }
+]), registrationRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

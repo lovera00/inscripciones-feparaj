@@ -2,7 +2,7 @@ const pool = require('../config/db');
 const supabase = require('../config/supabase');
 
 const createRegistration = async (req, res) => {
-  const { file } = req;
+  const { files } = req;
   const {
     first_name,
     last_name,
@@ -18,24 +18,41 @@ const createRegistration = async (req, res) => {
   } = req.body;
 
   try {
-    // Subir archivo a Supabase Storage
-    const fileName = `${Date.now()}-${file.originalname}`;
-    const { data, error } = await supabase.storage
+    // Subir comprobante de pago a Supabase Storage
+    const paymentFile = files['payment_proof'][0];
+    const paymentFileName = `payment-${Date.now()}-${paymentFile.originalname}`;
+    const { data: paymentData, error: paymentError } = await supabase.storage
       .from('payment-proofs')
-      .upload(fileName, file.buffer, {
-        contentType: file.mimetype
+      .upload(paymentFileName, paymentFile.buffer, {
+        contentType: paymentFile.mimetype
       });
 
-    if (error) throw new Error('Error subiendo archivo');
+    if (paymentError) throw new Error('Error subiendo comprobante de pago');
 
-    // Obtener URL pública
-    const { data: urlData } = supabase.storage
+    // Obtener URL pública del comprobante de pago
+    const { data: paymentUrlData } = supabase.storage
       .from('payment-proofs')
-      .getPublicUrl(fileName);
+      .getPublicUrl(paymentFileName);
+
+    // Subir aval de federación a Supabase Storage
+    const approvalFile = files['federation_approval'][0];
+    const approvalFileName = `approval-${Date.now()}-${approvalFile.originalname}`;
+    const { data: approvalData, error: approvalError } = await supabase.storage
+      .from('payment-proofs')
+      .upload(approvalFileName, approvalFile.buffer, {
+        contentType: approvalFile.mimetype
+      });
+
+    if (approvalError) throw new Error('Error subiendo aval de federación');
+
+    // Obtener URL pública del aval de federación
+    const { data: approvalUrlData } = supabase.storage
+      .from('payment-proofs')
+      .getPublicUrl(approvalFileName);
 
     // Insertar en PostgreSQL
     const result = await pool.query(
-      'INSERT INTO registrations (first_name, last_name, fide_id, birthdate, category, participant_type, federation, payment_proof, email, hotel, document_number, comments) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+      'INSERT INTO registrations (first_name, last_name, fide_id, birthdate, category, participant_type, federation, payment_proof, federation_approval, email, hotel, document_number, comments) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *',
       [
         first_name,
         last_name,
@@ -44,7 +61,8 @@ const createRegistration = async (req, res) => {
         category,
         participant_type,
         federation,
-        urlData.publicUrl,
+        paymentUrlData.publicUrl,
+        approvalUrlData.publicUrl,
         email,
         hotel,
         document_number,
